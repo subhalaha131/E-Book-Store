@@ -1,0 +1,30 @@
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: epicreads_db
+      MYSQL_USER: epicreads_user
+      MYSQL_PASSWORD: userpassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  epicreads-app:
+    image: epicreads
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/epicreads_db
+      SPRING_DATASOURCE_USERNAME: epicreads_user
+      SPRING_DATASOURCE_PASSWORD: userpassword
+
+volumes:
+  mysql_data:
